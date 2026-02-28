@@ -1,0 +1,146 @@
+# Dummy MCP Server and Installer
+*This is just a dummy test mcp server used for testing various stuff, ntg important*
+
+This repository provides a reproducible installer for the Dummy MCP Server and automatic configuration of VS Code's `mcp.json`.
+The installer:
+- Verifies required system dependencies
+- Clones the repository into `~/.mcp_servers`
+- Creates an isolated Python virtual environment
+- Installs required dependencies
+- Safely creates or merges VS Code `mcp.json`
+- Registers the MCP server under `my-dummy-server`
+---
+## System Requirements
+The following must be available in your system `PATH`:
+- Python 3.8+
+- git
+- Visual Studio Code CLI (`code`)
+To verify manually:
+```
+python3 --version
+git --version
+code --version
+```
+If any of these commands fail, installation will stop.
+---
+## What the Installer Does
+On successful installation:
+1. Creates:
+```
+~/.mcp_servers/
+```
+2. Clones:
+https://github.com/Zzabi/dummy-mcp-server.git
+3. Creates: (not a goodway to actually do it but this is only for testing use uv, pix etc later)
+```
+~/.mcp_servers/dummy-mcp-server/.venv
+```
+4. Installs dependencies from `requirements.txt`
+5. Updates VS Code configuration:
+Linux:
+```
+~/.config/Code/User/mcp.json
+```
+macOS:
+```
+~/Library/Application Support/Code/User/mcp.json
+```
+Windows:
+```
+%APPDATA%\Code\User\mcp.json
+```
+The installer safely merges configuration. Existing MCP servers are preserved.
+---
+## Installation (macOS / Linux)
+### Recommended (secure method)
+Download and review before executing:
+```
+curl -fsSL [https://raw.githubusercontent.com/](https://raw.githubusercontent.com/)<user>/<repo>/main/install_mcp.sh -o install_mcp.sh
+chmod +x install_mcp.sh
+./install_mcp.sh
+```
+### One-line install (convenience method)
+```
+curl -fsSL [https://raw.githubusercontent.com/](https://raw.githubusercontent.com/)<user>/<repo>/main/install_mcp.sh | bash
+```
+---
+## Installation (Windows)
+Run:
+```
+install_mcp.bat
+```
+Ensure `python`, `git`, and `code` are accessible in PATH.
+---
+## Expected Outcome
+After successful installation:
+- The MCP server is registered under:
+```
+my-dummy-server
+```
+- It uses the virtual environment Python interpreter:
+```
+~/.mcp_servers/dummy-mcp-server/.venv/bin/python3
+```
+- It launches:
+```
+server.py
+```
+Restart VS Code if necessary.
+---
+## Failure Conditions
+Installation will stop if:
+- Python is missing
+- Git is missing
+- VS Code CLI is missing
+- `server.py` is not found
+- `mcp.json` is invalid JSON
+- Dependency installation fails
+All errors are printed with explicit reasons.
+---
+## Manual Verification
+Check that the server entry exists:
+Open:
+```
+mcp.json
+```
+You should see:
+```
+"my-dummy-server": {
+"type": "stdio",
+"command": "<path-to-venv-python>",
+"args": ["<path-to-server.py>"]
+}
+```
+---
+## Uninstall
+To remove:
+1. Delete:
+```
+~/.mcp_servers/dummy-mcp-server
+```
+2. Remove the `my-dummy-server` entry from `mcp.json`
+---
+## Security Notice
+Piping remote scripts directly to `bash` is convenient but not inherently safe. For production environments, download and inspect the script before executing.
+---
+## Architecture Notes
+The installer uses:
+- Python's built-in `venv`
+- JSON merge logic implemented in Python (no jq dependency)
+- OS detection for VS Code configuration paths
+- Idempotent directory creation
+- Fail-fast shell execution (`set -euo pipefail`)
+---
+## Alternative Installation Strategies
+For production-grade environments, consider:
+- Publishing as a Python package and installing via `pipx`
+- Using a versioned GitHub release instead of `main`
+- Providing a cross-platform Python bootstrap installer
+- Distributing via Homebrew or Scoop
+---
+## Support
+If installation fails:
+1. Verify all required tools are in PATH.
+2. Confirm Python version ≥ 3.8.
+3. Ensure VS Code CLI is installed (`code --install-extension` should work).
+4. Run the installer with verbose logging if necessary.

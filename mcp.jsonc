@@ -1,0 +1,191 @@
+// AI Generated not verified
+{
+  // ============================================
+  // MCP Configuration File (JSONC Example)
+  // ============================================
+
+  // --------------------------------------------
+  // Defines all registered MCP servers
+  // Each key is a unique identifier
+  // --------------------------------------------
+  "servers": {
+
+    // Unique logical name of this MCP server
+    "my-dummy-server": {
+
+      // ----------------------------------------
+      // TRANSPORT TYPE
+      // ----------------------------------------
+      // "stdio"      → launches a local process
+      // "http"       → connects to remote HTTP endpoint
+      // "websocket"  → connects to remote WebSocket endpoint
+      "type": "stdio",
+
+      // ----------------------------------------
+      // LOCAL PROCESS EXECUTION (stdio only)
+      // ----------------------------------------
+
+      // Executable to launch
+      // Usually a Python interpreter or compiled binary
+      "command": "/home/username/.mcp_servers/dummy-mcp-server/.venv/bin/python3",
+
+      // Arguments passed to the command
+      // For Python servers, usually the entry script
+      "args": [
+        "/home/username/.mcp_servers/dummy-mcp-server/server.py",
+        "--port",
+        "9000"
+      ],
+
+      // Working directory for the launched process
+      // Important when server relies on relative paths
+      "cwd": "/home/username/.mcp_servers/dummy-mcp-server",
+
+      // Environment variables injected into the server process
+      // Useful for API keys, debug levels, feature flags
+      "env": {
+        "LOG_LEVEL": "debug",
+        "ENVIRONMENT": "development",
+        "API_KEY": "your-api-key-here"
+      },
+
+      // Startup timeout in milliseconds
+      // If process does not initialize within this time, client fails
+      "timeout": 30000,
+
+      // Whether to automatically start this server when client loads
+      // If false, server may start lazily on demand
+      "autoStart": true,
+
+      // Temporarily disable server without deleting configuration
+      "disabled": false,
+
+      // ----------------------------------------
+      // ADVANCED TRANSPORT SETTINGS (optional)
+      // ----------------------------------------
+      "transport": {
+        // Underlying protocol encoding
+        // Typically JSON-RPC
+        "encoding": "jsonrpc",
+
+        // Optional framing mode for stdio streams
+        "framing": "content-length"
+      }
+    },
+
+    // --------------------------------------------
+    // Example of a Remote HTTP MCP Server
+    // --------------------------------------------
+    "remote-server": {
+
+      "type": "http",
+
+      // Base URL of hosted MCP endpoint
+      "url": "https://mcp.example.com",
+
+      // Optional HTTP headers
+      "headers": {
+        "Authorization": "Bearer your-token",
+        "X-Custom-Header": "custom-value"
+      },
+
+      // HTTP request timeout
+      "timeout": 20000,
+
+      // Optional retry policy
+      "retryPolicy": {
+        "maxRetries": 3,
+        "backoffMs": 1000
+      },
+
+      // TLS configuration (if supported by client)
+      "tls": {
+        "rejectUnauthorized": true
+      }
+    },
+
+    // --------------------------------------------
+    // Example WebSocket Server
+    // --------------------------------------------
+    "ws-server": {
+
+      "type": "websocket",
+
+      // WebSocket endpoint
+      "url": "wss://mcp.example.com/ws",
+
+      // Optional connection timeout
+      "timeout": 15000
+    }
+  },
+
+  // --------------------------------------------
+  // INPUT DEFINITIONS
+  // --------------------------------------------
+  // Defines configurable inputs that MCP runtime can request
+  // These allow dynamic parameters without editing server config
+  "inputs": [
+
+    {
+      // Input identifier
+      "name": "workspacePath",
+
+      // Data type: string | number | boolean | enum | array
+      "type": "string",
+
+      // Description shown in UI
+      "description": "Root path of the project workspace",
+
+      // Whether input is mandatory
+      "required": true
+    },
+
+    {
+      "name": "environment",
+
+      "type": "string",
+
+      // Restrict to specific values
+      "enum": ["dev", "staging", "prod"],
+
+      // Default value if user does not provide one
+      "default": "dev"
+    },
+
+    {
+      "name": "enableExperimentalFeatures",
+
+      "type": "boolean",
+
+      "default": false
+    }
+  ],
+
+  // --------------------------------------------
+  // GLOBAL DEFAULTS (Optional)
+  // Applies default values across all servers
+  // --------------------------------------------
+  "defaults": {
+
+    // Default transport encoding
+    "encoding": "jsonrpc",
+
+    // Global timeout fallback
+    "timeout": 20000
+  },
+
+  // --------------------------------------------
+  // LOGGING CONFIGURATION
+  // --------------------------------------------
+  "logging": {
+
+    // Logging level: debug | info | warn | error
+    "level": "info",
+
+    // Optional log file location
+    "file": "/tmp/mcp-client.log",
+
+    // Whether to log raw protocol messages
+    "traceProtocol": false
+  }
+}
